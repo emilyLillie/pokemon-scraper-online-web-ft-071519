@@ -1,29 +1,20 @@
 class Pokemon
   attr_accessor :id, :name, :type, :db
-  @@all = []
 
-   def initialize(input)
-    @id = input[:id]
-    @name = input[:name]
-    @type = input[:type]
-    @db = input[:db]
-    input
+  def self.save(name, type, db)
+    db.execute("INSERT INTO pokemon (name, type) VALUES (?, ?)", name, type)
   end
 
-   def self.all
-    @@all
+  def self.find(id_num, db)
+    pokemon_info = db.execute("SELECT * FROM pokemon WHERE id=?", id_num).flatten
+    Pokemon.new(id: pokemon_info[0], name: pokemon_info[1], type: pokemon_info[2], hp: pokemon_info[3], db: db)
   end
 
- def self.save(name, type, db)
-    db.execute("INSERT INTO pokemon (name, type) VALUES (?, ?)",name, type)
-end
+  def initialize(id:, name:, type:, db:)
+    @id, @name, @type, @db = id, name, type, db
+  end
 
- def self.find(id, db)
-     pokemonInfo = {}
-     type = db.execute("SELECT type FROM pokemon WHERE id = #{id}").flatten[0]
-     name = db.execute("SELECT name FROM pokemon WHERE id = #{id}").flatten[0]
-     info = {id: id, name: name, type: type, db: db}
-     foundPokemon = Pokemon.new(info)
-end
-  
+  # def alter_hp(new_hp, db)
+  #   db.execute("UPDATE pokemon SET hp = ? WHERE id = ?", new_hp, self.id)
+  # end
 end
